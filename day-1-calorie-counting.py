@@ -1,9 +1,11 @@
 import requests
+import heapq
+import time
 
 
 URL = "https://adventofcode.com/2022/day/1/input"
 headers = {
-    'cookie':'session=XXXXX'
+    'cookie':'session=XXX'
 }
 page = requests.get(URL, headers=headers)
 text_data = page.text
@@ -23,4 +25,16 @@ totals_by_elf = list(map(sum, by_elf))
 
 max_cal = max(totals_by_elf)
 
-print(f'Max calories: {max_cal}, Elf #:{totals_by_elf.index(max_cal)}')
+# using list.sort - -7.39e-5s
+# start = time.time()
+# sorted_totals = totals_by_elf.copy()
+# sorted_totals.sort(reverse=True)
+
+# using heapq - -3.79e-5s
+start = time.time()
+heap_totals = heapq.nlargest(3, totals_by_elf)
+
+for i, cals in enumerate(heap_totals):
+    print(f'Most #{i+1}, Elf #{totals_by_elf.index(cals)}, {cals}cal')
+
+print(f'~~~\nTop 3 total: {sum(heap_totals)}')
