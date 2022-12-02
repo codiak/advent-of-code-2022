@@ -1,15 +1,9 @@
-import requests
+from utils import fetchInput
 import heapq
-import time
 
 
-URL = "https://adventofcode.com/2022/day/1/input"
-headers = {
-    'cookie':'session=XXX'
-}
-page = requests.get(URL, headers=headers)
+page = fetchInput("https://adventofcode.com/2022/day/1/input")
 text_data = page.text
-
 by_elf_str = text_data.split('\n\n')
 
 
@@ -26,12 +20,10 @@ totals_by_elf = list(map(sum, by_elf))
 max_cal = max(totals_by_elf)
 
 # using list.sort - -7.39e-5s
-# start = time.time()
 # sorted_totals = totals_by_elf.copy()
 # sorted_totals.sort(reverse=True)
 
 # using heapq - -3.79e-5s
-start = time.time()
 heap_totals = heapq.nlargest(3, totals_by_elf)
 
 for i, cals in enumerate(heap_totals):
