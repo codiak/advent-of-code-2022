@@ -30,11 +30,13 @@ for step in text_rows[10:-1]:
     a = int(parsed[3]) - 1
     b = int(parsed[5]) - 1
     # move n from a to b
+    temp_q = queue.LifoQueue()  # difference between parts I & II
     for k in range(n):
         if not stacks[a].empty():
-            item = stacks[a].get()
-            stacks[b].put(item)
+            temp_q.put(stacks[a].get())
+    while not temp_q.empty():
+        stacks[b].put(temp_q.get())
 
-# Part 1 solution:
+# output solution:
 for stack in stacks:
-    print(list(stack.queue)[0])
+    print(list(stack.queue)[-1])
