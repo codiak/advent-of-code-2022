@@ -76,6 +76,13 @@ sizes = {}
 #     else:
 #         print("Empty line or done?")
 
+def getFullPath(node):
+    path = ''
+    while getattr(node, 'parent'):
+        path = f'{getattr(node, "path")}/{path}'
+        node = getattr(node, 'parent')
+    return path
+
 def updateSizes():
     dir_size = 0
     for child in current_node.get_children():
@@ -85,8 +92,11 @@ def updateSizes():
     parent = getattr(current_node, 'parent')
     if parent:
         # if getattr(parent, 'path') == '/':
-        parent_path = getattr(parent, 'path')
-        sizes[f'{parent_path}/{getattr(current_node, "path")}'] = dir_size
+        # parent_path = getattr(parent, 'path')
+        full_path = getFullPath(current_node)
+        sizes[full_path] = dir_size
+    else:
+        sizes['/'] = dir_size
 
 i = 0
 # build tree
@@ -140,15 +150,38 @@ while i < len(text_rows):
         updateSizes()
 
 # traverse tree and update sizes
+while getattr(current_node, 'parent'):
+    updateSizes()
+    print('Final go up')
+    current_node = getattr(current_node, 'parent')
+    updateSizes()
 
-
-print(root_node)
-print(sizes)
+# print(root_node)
+# print(sizes)
 
 total_small = 0
 for key, value in sizes.items():
-    print(value)
     if value < 100000:
         total_small += value
 
 print(f"<100000 total: {total_small}")
+
+total = 70000000
+used = sizes['/']
+left = total - used
+need = 30000000 - left
+print(f'{used}/{total}')
+print(f'Need: {need}')
+
+smallest_diff = 100000000
+best_dir = None
+dir_size = 0
+
+for key, value in sizes.items():
+    new_diff = value - need
+    if new_diff > 0 and new_diff < smallest_diff:
+        smallest_diff = new_diff
+        best_dir = key
+        best_size = value
+
+print(f'Delete: {best_dir}, with {best_size}, for {smallest_diff} over needed')
