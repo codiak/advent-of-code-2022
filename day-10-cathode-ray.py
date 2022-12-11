@@ -22,7 +22,7 @@ def renderSignal(text_rows):
         pos = (cycle-1) % 40
         if pos-1 <= x and pos+1 >= x:
             # print lit pixel in green
-            print('\33[32m#\33[0m', end="")
+            print('\33[31m#\33[0m', end="")
         else:
             print('.', end="")
         if pos == 39:
