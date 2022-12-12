@@ -23,6 +23,7 @@ map_w = len(map_rows[0])
 map_points = []
 start_i = 0
 
+
 class Point(object):
     def __init__(self, h, up, down, left, right,
                  is_start=False, is_goal=False):
@@ -93,19 +94,15 @@ for y in range(map_h):
                 right = ri
         map_points.append(Point(h, up, down, left, right, is_start=s, is_goal=g))
 
-visited = [start_i]
-steps_to_i = {start_i:0}
-successful_paths = []
-node_queue = [(start_i, [start_i])]
 
-def check_next(i, steps_so_far):
-    print(f'checking: {i}')
+def check_next(i, steps_so_far, node_queue, steps_to_i, paths):
+    # print(f'checking: {i}')  # debug
     point = map_points[i]
 
     if point.is_goal:
         print('Found goal!')
         print(len(steps_so_far))
-        successful_paths.append(len(steps_so_far))
+        paths.append(len(steps_so_far))
 
     if point.up != None:
         steps = copy(steps_so_far)
@@ -132,12 +129,33 @@ def check_next(i, steps_so_far):
             steps_to_i[point.right] = len(steps)
             node_queue.append((point.right, steps))
 
-start = time.time()
 
-while node_queue:
-    tuple = node_queue.pop(0)
-    check_next(tuple[0], tuple[1])
+def find_shortest_climb(start):
+    steps_to_i = {start:0}
+    successful_paths = []
+    node_queue = [(start, [start])]
+    start = time.time()
 
-print(f'Successful: {min(successful_paths) - 1}')
+    while node_queue:
+        tuple = node_queue.pop(0)
+        check_next(tuple[0], tuple[1], node_queue, steps_to_i, successful_paths)
 
-print(f'Completed in: {time.time() - start}s')
+    print(f'Completed in: {time.time() - start}s')
+    if successful_paths:
+        return min(successful_paths) - 1
+    else:
+        print(f'No paths from {start} found!')
+        return None
+
+# Part I
+shortest = find_shortest_climb(start_i)
+print(f'Successful: {shortest}')
+
+# Part II
+dists_from_lowest = []
+for i, p in enumerate(map_points):
+    if p.h == 0:
+        dist = find_shortest_climb(i)
+        if dist:
+            dists_from_lowest.append(dist)
+print(f'Shortest from lowest: {min(dists_from_lowest)}')
